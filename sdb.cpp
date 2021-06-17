@@ -145,9 +145,9 @@ void capstone_disasm(unsigned long long &addr, unsigned char *code)
     count = cs_disasm(handle, code, 8, addr, 1, &insn);
     if (count > 0)
     {
-        cout << right << setw(12) << insn[0].address << ": "
+        cout << right << setw(12) << hex << insn[0].address << ": "
              << left << setw(31) << get_bytes(insn[0].bytes, insn[0].size)
-             << left << setw(7) << insn[0].mnemonic << insn[0].op_str << endl;
+             << setw(7) << insn[0].mnemonic << insn[0].op_str << endl;
 
         addr += insn[0].size;
         cs_free(insn, count);
@@ -173,7 +173,7 @@ void deletebp(int bpid)
         {
             patch_code((*it).addr, (*it).code);
             breakpoints.erase(it);
-            cout << "** breakpoint " << bpid << " deleted." << endl;
+            cout << "** breakpoint " << dec << bpid << " deleted." << endl;
             return;
         }
     }
@@ -192,6 +192,14 @@ void disasm(unsigned long long addr)
     for (int i = 0; i < 10; i++)
     {
         code = ptrace(PTRACE_PEEKTEXT, child, addr, 0);
+        for (auto &&bp : breakpoints)
+        {
+            if (bp.addr == addr)
+            {
+                code = bp.code;
+                break;
+            }
+        }
         capstone_disasm(addr, (unsigned char *)&code);
     }
 }
@@ -250,7 +258,7 @@ void vmmap()
             addr_parts.push_back(temp);
         }
 
-        cout << setfill('0') << setw(16) << addr_parts[0] << "-" << setfill('0') << setw(16) << addr_parts[1]
+        cout << right << setfill('0') << setw(16) << addr_parts[0] << "-" << setw(16) << addr_parts[1]
              << " " << perms.substr(0, 3) << " " << left << setfill(' ') << setw(9) << inode << pathname << endl;
     }
 }
@@ -259,7 +267,7 @@ void list()
 {
     for (auto &&bp : breakpoints)
     {
-        cout << right << setw(3) << bp.id << ":  " << hex << bp.addr << endl;
+        cout << right << setw(3) << dec << bp.id << ":  " << hex << bp.addr << endl;
     }
 }
 
@@ -414,7 +422,7 @@ void getregs()
         counter++;
         string upper_reg = reg;
         transform(reg.begin(), reg.end(), upper_reg.begin(), ::toupper);
-        cout << left << setw(3) << upper_reg << " " << left << setw(18) << hex << *regs[reg];
+        cout << left << setw(3) << upper_reg << " " << setw(18) << hex << *regs[reg];
         if (counter % 4 == 0)
             cout << endl;
     }
