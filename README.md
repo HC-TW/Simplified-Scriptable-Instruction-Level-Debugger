@@ -34,7 +34,7 @@ The details of each command are explained below. In a debugging process, you hav
 - **vmmap** or **m [running]**: Show memory layout for a running program. If a program is not running, you can simply display an error message.
 - **set** or **s [running]**: Set the value of a register
 - **si [running]**: Run a single instruction, and step into function calls.
-- **start [loaded]**: Start the program and stop at the first instruction.\
+- **start [loaded]**: Start the program and stop at the first instruction.
 
 Your program may output some debug messages. In that case, please add "\*\*" prefixes before your message. We will remove lines beginning with "\*\*" when comparing outputs.
 
